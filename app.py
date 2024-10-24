@@ -1,11 +1,10 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from nba_api.stats.endpoints import playergamelog
 from nba_api.stats.static import players
 import pandas as pd
 
-
-### Create FastAPI instance with custom docs and openapi url
+# Crear instancia de FastAPI
 app = FastAPI(docs_url="/api/py/docs", openapi_url="/api/py/openapi.json")
 
 # Habilitar CORS
@@ -30,13 +29,14 @@ def get_player_stats(player_id: int, season: str, season_type: str):
     gamelog_df = gamelog.get_data_frames()[0]
     return gamelog_df
 
-# Endpoint que recibe el nombre del jugador, la temporada y el tipo de temporada
+# Endpoint que muestra las estadísticas de Joel Embiid
 @app.get("/api/py/player-stats")
-def player_stats(
-    player_name: str = Query(..., alias="name"), 
-    season: str = Query(...), 
-    season_type: str = Query('Regular Season')
-):
+def player_stats():
+    # Valores fijos para Joel Embiid
+    player_name = "Joel Embiid"
+    season = "2023-24"
+    season_type = "Regular Season"
+
     # Obtener el ID del jugador
     player_id = get_player_id(player_name)
     if not player_id:
