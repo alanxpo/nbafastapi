@@ -28,8 +28,7 @@ def get_player_id(player_name):
 
 # Función para obtener las estadísticas del jugador
 def get_player_stats(player_id, season, season_type):
-    gamelog = playergamelog.PlayerGameLog(player_id=player_id, season=season, season_type_all_star=season_type,headers=headers,
-        timeout=10)
+    gamelog = playergamelog.PlayerGameLog(player_id=player_id, season=season, season_type_all_star=season_type, headers=headers, timeout=10)
     gamelog_df = gamelog.get_data_frames()[0]
     return gamelog_df
 
