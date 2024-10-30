@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS  # Importar CORS
 from nba_api.stats.endpoints import playergamelog
 from nba_api.stats.static import players
+from nba_api.live.nba.endpoints import scoreboard
 import pandas as pd
 import json
 
