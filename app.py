@@ -41,4 +41,4 @@ def jayson_last_5_games():
     return jsonify(stats)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
