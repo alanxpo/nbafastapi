@@ -9,6 +9,16 @@ import json
 app = Flask(__name__)
 CORS(app)  # Habilitar CORS para todas las rutas
 
+headers = {
+    'Host': 'stats.nba.com',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Referer': 'https://stats.nba.com/',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive',
+}
+
 # Función para obtener el ID del jugador por nombre
 def get_player_id(player_name):
     player_dict = players.find_players_by_full_name(player_name)
@@ -18,7 +28,8 @@ def get_player_id(player_name):
 
 # Función para obtener las estadísticas del jugador
 def get_player_stats(player_id, season, season_type):
-    gamelog = playergamelog.PlayerGameLog(player_id=player_id, season=season, season_type_all_star=season_type)
+    gamelog = playergamelog.PlayerGameLog(player_id=player_id, season=season, season_type_all_star=season_type,headers=headers,
+        timeout=10)
     gamelog_df = gamelog.get_data_frames()[0]
     return gamelog_df
 
