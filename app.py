@@ -35,7 +35,7 @@ def get_jayson_tatum_last_5_games():
     
     return game_data
 
-@app.route('/jayson', methods=['GET'])
+@app.route('/', methods=['GET'])
 def jayson_last_5_games():
     stats = get_jayson_tatum_last_5_games()
     return jsonify(stats)
