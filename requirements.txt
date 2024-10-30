@@ -1,5 +1,5 @@
 flask==3.0.3
 flask-cors==5.0.0
-nba_api==1.1.14
-pandas==1.5.3
+nba_api==1.6.0
+pandas==2.2.3
 gunicorn
