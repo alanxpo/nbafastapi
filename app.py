@@ -1,10 +1,56 @@
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS  # Importar CORS
-from nba_api.live.nba.endpoints import scoreboard
+from nba_api.stats.endpoints import playergamelog
+from nba_api.stats.static import players
+import pandas as pd
 import json
 
 app = Flask(__name__)
 CORS(app)  # Habilitar CORS para todas las rutas
+
+# Función para obtener el ID del jugador por nombre
+def get_player_id(player_name):
+    player_dict = players.find_players_by_full_name(player_name)
+    if player_dict:
+        return player_dict[0]['id']
+    return None
+
+# Función para obtener las estadísticas del jugador
+def get_player_stats(player_id, season, season_type):
+    gamelog = playergamelog.PlayerGameLog(player_id=player_id, season=season, season_type_all_star=season_type)
+    gamelog_df = gamelog.get_data_frames()[0]
+    return gamelog_df
+
+# Endpoint que recibe el nombre del jugador, la temporada y el tipo de temporada
+@app.route('/player-stats', methods=['GET'])
+def player_stats():
+    # Obtener los parámetros de la solicitud
+    player_name = request.args.get('name')
+    season = request.args.get('season')
+    season_type = request.args.get('season_type', 'Regular Season')  # Valor por defecto: temporada regular
+
+    # Validar que los parámetros necesarios están presentes
+    if not player_name or not season:
+        return jsonify({'error': 'Por favor proporcione el nombre del jugador y la temporada.'}), 400
+
+    # Obtener el ID del jugador
+    player_id = get_player_id(player_name)
+    if not player_id:
+        return jsonify({'error': f'No se encontró al jugador: {player_name}'}), 404
+
+    # Obtener las estadísticas del jugador
+    try:
+        player_stats_df = get_player_stats(player_id, season, season_type)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    # Mostrar todos los juegos
+    all_games = player_stats_df
+
+    # Convertir el DataFrame a diccionario para devolver como JSON
+    stats_json = all_games[['GAME_DATE', 'MATCHUP', 'PTS', 'REB', 'AST', 'BLK', 'STL', 'MIN', 'WL']].to_dict(orient='records')
+
+    return jsonify(stats_json)
 
 @app.route('/')
 def home():
@@ -52,3 +98,5 @@ def live_scores():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
